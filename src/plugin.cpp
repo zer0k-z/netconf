@@ -40,6 +40,10 @@ void IterateConfig( const CCommand &command, CUtlVector< CUtlString > &completio
 		eValue != k_ESteamNetworkingConfig_Invalid;
 		eValue = SteamNetworkingUtils()->IterateGenericEditableConfigValues(eValue, true))
 	{
+		if (command.ArgC() >= 2)
+		{
+			if (!V_strstr(SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr), command[1])) continue;
+		}
 		CUtlString str;
 		str.Format("%s %s", command[0], SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr));
 		completions.AddToTail(str);
@@ -121,22 +125,22 @@ CON_COMMAND_F_COMPLETION(netconf, "Get or set SteamNetworkingSockets options.", 
 	{
 		case k_ESteamNetworkingConfig_Int32:
 		{
-			META_CONPRINTF("net_setconfig %s = %d\n", args.Arg(1), *buffer);
+			META_CONPRINTF("netconf %s = %d\n", args.Arg(1), *buffer);
 			break;
 		}
 		case k_ESteamNetworkingConfig_Int64:
 		{
-			META_CONPRINTF("net_setconfig %s: %lld\n", args.Arg(1), *buffer);
+			META_CONPRINTF("netconf %s: %lld\n", args.Arg(1), *buffer);
 			break;
 		}
 		case k_ESteamNetworkingConfig_Float:
 		{
-			META_CONPRINTF("net_setconfig %s: %f\n", args.Arg(1), *buffer);
+			META_CONPRINTF("netconf %s: %f\n", args.Arg(1), *buffer);
 			break;
 		}
 		case k_ESteamNetworkingConfig_String:
 		{
-			META_CONPRINTF("net_setconfig %s: %s\n", args.Arg(1), buffer);
+			META_CONPRINTF("netconf %s: %s\n", args.Arg(1), buffer);
 			break;
 		}
 	}
@@ -151,16 +155,4 @@ bool NetConfPlugin::Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen,
 	ConVar_Register();
 
 	return true;
-}
-
-bool NetConfPlugin::Unload(char *error, size_t maxlen)
-{
-	return true;
-}
-
-void NetConfPlugin::AllPluginsLoaded()
-{
-	/* This is where we'd do stuff that relies on the mod or other plugins 
-	 * being initialized (for example, cvars added and events registered).
-	 */
 }
