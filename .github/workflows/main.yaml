@@ -30,16 +30,11 @@ jobs:
       - name: Install AMBuild
         run: cd ambuild && python setup.py install && cd ..
 
-      - name: Install Clang 11
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          apt update && apt install -y clang-11
-          ln -sf /usr/bin/clang-11 /usr/bin/clang && ln -sf /usr/bin/clang++-11 /usr/bin/clang++
-
       - name: Build
         shell: bash
         run: |
           mkdir build && cd build
+          git config --global --add safe.directory ..
           python ../configure.py
           ambuild
 
@@ -68,12 +63,12 @@ jobs:
 
       - name: Archive Linux build
         run: |
-          cd /home/runner/artifacts/netconf-linux
+          cd /home/runner/artifacts/netconf-Linux
           tar -czvf /home/runner/releases/netconf-linux.tar.gz *
 
       - name: Archive Windows build
         run: |
-          cd /home/runner/artifacts/netconf-windows
+          cd /home/runner/artifacts/netconf-Windows
           zip -r /home/runner/releases/netconf-windows.zip *
 
       - name: Create Tag

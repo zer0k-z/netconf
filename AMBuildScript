@@ -226,7 +226,7 @@ extern const char* PLUGIN_REVISION_COUNT;
       # Force track head changes to trigger recompilation
       builder.AddConfigureFile(git_head_path)
       builder.AddConfigureFile(direct_head)
-
+      runAndReturn(['git', 'config', '--global', '--add', 'safe.directory', builder.currentSourcePath])
       revision_count = runAndReturn(['git', 'rev-list', '--count', 'HEAD'])
       revision_hash = runAndReturn(['git', 'log', '--pretty=format:%h:%H', '-n', '1'])
       shorthash, longhash = revision_hash.split(':')
