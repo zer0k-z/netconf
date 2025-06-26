@@ -42,7 +42,7 @@ void IterateConfig( const CCommand &command, CUtlVector< CUtlString > &completio
 	{
 		if (command.ArgC() >= 2)
 		{
-			if (!V_strstr(SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr), command[1])) continue;
+			if (!V_stristr(SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr), command[1])) continue;
 		}
 		CUtlString str;
 		str.Format("%s %s", command[0], SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr));
