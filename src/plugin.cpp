@@ -40,9 +40,13 @@ void IterateConfig( const CCommand &command, CUtlVector< CUtlString > &completio
 		eValue != k_ESteamNetworkingConfig_Invalid;
 		eValue = SteamNetworkingUtils()->IterateGenericEditableConfigValues(eValue, true))
 	{
-		if (command.ArgC() >= 2)
+		if (command.ArgC() == 2)
 		{
 			if (!V_stristr(SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr), command[1])) continue;
+		}
+		else if (command.ArgC() == 3)
+		{
+			if (V_stricmp(SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr), command[1])) continue;
 		}
 		CUtlString str;
 		str.Format("%s %s", command[0], SteamNetworkingUtils()->GetConfigValueInfo(eValue, nullptr, nullptr));
