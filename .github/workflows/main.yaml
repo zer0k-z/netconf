@@ -1,0 +1,95 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: windows-latest
+          - os: ubuntu-latest
+            container: registry.gitlab.steamos.cloud/steamrt/sniper/sdk
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Clone AMBuild
+        uses: actions/checkout@v4
+        with:
+          repository: alliedmodders/ambuild
+          path: ./ambuild
+
+      - name: Install AMBuild
+        run: cd ambuild && python setup.py install && cd ..
+
+      - name: Install Clang 11
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          apt update && apt install -y clang-11
+          ln -sf /usr/bin/clang-11 /usr/bin/clang && ln -sf /usr/bin/clang++-11 /usr/bin/clang++
+
+      - name: Build
+        shell: bash
+        run: |
+          mkdir build && cd build
+          python ../configure.py
+          ambuild
+
+      - name: Archive build
+        uses: actions/upload-artifact@v4
+        with:
+          name: netconf-${{ runner.os }}
+          path: ./build/package
+
+  release:
+    if: github.ref == 'refs/heads/main' 
+    name: Release
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: /home/runner/artifacts
+
+      - name: Create folders
+        run: |
+          mkdir /home/runner/releases
+
+      - name: Archive Linux build
+        run: |
+          cd /home/runner/artifacts/netconf-linux
+          tar -czvf /home/runner/releases/netconf-linux.tar.gz *
+
+      - name: Archive Windows build
+        run: |
+          cd /home/runner/artifacts/netconf-windows
+          zip -r /home/runner/releases/netconf-windows.zip *
+
+      - name: Create Tag
+        id: create_tag
+        run: |
+          TAG_NAME="latest"
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          git tag -f $TAG_NAME
+          git push -f origin $TAG_NAME
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          files: |
+            /home/runner/releases/netconf-linux.tar.gz
+            /home/runner/releases/netconf-windows.zip
+          generate_release_notes: false
+          prerelease: false

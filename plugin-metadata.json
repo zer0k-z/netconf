@@ -1,0 +1,11 @@
+{
+    "name": "netconf",
+    "alias": "netconf",
+    "display_name": "Network Configurer",
+    "description": "Provide unlocked alternative to net_option",
+    "author": "zer0.k",
+    "url": "https://github.com/zer0k-z/",
+    "log_tag": "NETCONF",
+    "license": "GPL3",
+    "version": "1.0.0.{{git-shorthash}}"
+}
