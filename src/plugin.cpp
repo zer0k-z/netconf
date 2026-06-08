@@ -129,17 +129,20 @@ CON_COMMAND_F_COMPLETION(netconf, "Get or set SteamNetworkingSockets options.", 
 	{
 		case k_ESteamNetworkingConfig_Int32:
 		{
-			META_CONPRINTF("netconf %s = %d\n", args.Arg(1), *buffer);
+			int32 value = (int32&)(*buffer);
+			META_CONPRINTF("netconf %s = %d\n", args.Arg(1), value);
 			break;
 		}
 		case k_ESteamNetworkingConfig_Int64:
 		{
-			META_CONPRINTF("netconf %s: %lld\n", args.Arg(1), *buffer);
+			uint64 value = (uint64&)(*buffer);
+			META_CONPRINTF("netconf %s: %lld\n", args.Arg(1), value);
 			break;
 		}
 		case k_ESteamNetworkingConfig_Float:
 		{
-			META_CONPRINTF("netconf %s: %f\n", args.Arg(1), *buffer);
+			float value = (float&)(*buffer);
+			META_CONPRINTF("netconf %s: %f\n", args.Arg(1), value);
 			break;
 		}
 		case k_ESteamNetworkingConfig_String:
