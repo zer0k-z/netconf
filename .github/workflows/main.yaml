@@ -27,8 +27,12 @@ jobs:
           repository: alliedmodders/ambuild
           path: ./ambuild
 
+      - name: Install setuptools (Windows)
+        if: runner.os == 'Windows'
+        run: pip install setuptools
+
       - name: Install AMBuild
-        run: python -m pip install ./ambuild
+        run: cd ambuild && python setup.py install && cd ..
 
       - name: Build
         shell: bash
